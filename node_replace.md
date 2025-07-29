@@ -25,7 +25,7 @@ weka cluster drive deactivate $uuids --force
 
 weka cluster drive remove $uuids --force
 ```
-Once the drives are removed you need to remove the containers from the cluster configuration so I list them to see which are DOWN
+Once the drives are removed remove the stale containers from the cluster configuration. List them to see which are DOWN
 ```
 weka cluster container -o hostname,container,id,status -s +hostname,+container
 ```
@@ -52,6 +52,7 @@ sudo azslurm resume --node-list ccw-converged-gpu-{dead-node-id}
 ```
 Wait for approximately 15-20 minutes for the node to come back online
 ## Node Preparation
+Continuing on the scheduler/headnode
 Run the 1.5_Nodeprep.sh script. This script will do the following
 1. Reinstall pdsh and copy over the /etc/pdsh/machines file
 2. Unmount /mnt/nvme and remove the entry from /etc/fstab
@@ -64,7 +65,7 @@ Run the 1.5_Nodeprep.sh script. This script will do the following
 ```
 Optional: Run Netplan and Configure Source Based Routing
 ## Node Install/Clusterizer
-From the scheduler, run the clusterize script to add the node to the cluster. You will need the 5 cluster join ip addresses.
+From the scheduler, run the clusterize script to add the node to the cluster. 5 cluster join ip addresses are required.
 ```
 JoinIPs=$(pdsh -w ccw-converged-gpu-1 weka cluster container -o hostname,container,ips,leadership | awk '/leader|member/ {print $4}' | tr '\n' ' ')
 

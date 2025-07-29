@@ -1,6 +1,7 @@
 # **Replacing a failed Weka Converged Node**
 
 ## Remove stale drives and containers
+Login to a surviving cluster (i.e. ccw-conververged-gpu-1)
 Start by running the following command to find the inactive drives still in the cluster configuration
 ```
  weka cluster drive | grep -i inactive
@@ -40,6 +41,7 @@ weka cluster container deactivate $contids --allow-unavailable
 weka cluster container remove $contids
 ```
 ## Deallocate and Reallocate the failed node
+Exit the ssh session to the gpu node and login to the scheduler/headnode.
 Run through the deallocate/reallocate process for the node
 ```
 sudo azslurm suspend --node-list ccw-converged-gpu-{dead-node-id}
@@ -64,7 +66,7 @@ Optional: Run Netplan and Configure Source Based Routing
 ## Node Install/Clusterizer
 From the scheduler, run the clusterize script to add the node to the cluster. You will need the 5 cluster join ip addresses.
 ```
-JoinIPs=$(weka cluster container -o hostname,container,ips,leadership | awk '/leader|member/ {print $3}' | tr '\n' ' ')
+JoinIPs=$(pdsh -w ccw-converged-gpu-1 weka cluster container -o hostname,container,ips,leadership | awk '/leader|member/ {print $4}' | tr '\n' ' ')
 
 echo $JoinIPs
 ```
